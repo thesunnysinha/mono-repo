@@ -1,0 +1,90 @@
+version: '3.8'
+
+networks:
+  monoreponetwork:
+    name: monoreponetwork
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.19.0.0/16"
+          gateway: "172.19.0.1"
+
+services:
+  db:
+    image: postgres:16
+    container_name: monorepodatabase
+    env_file: ./env/db.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - monorepodata:/var/lib/postgresql/data/
+    networks:
+      - monoreponetwork
+
+  redis:
+    image: redis:latest
+    container_name: monoreporedis
+    ports:
+      - "6379:6379"
+    networks:
+      - monoreponetwork
+
+  minio:
+    image: minio/minio
+    container_name: monorepominio
+    command: server /data --console-address ":9001"
+    env_file: ./env/minio.env
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+    networks:
+      - monoreponetwork
+
+  poetry_service:
+    build:
+      context: ./services/poetry_service
+    container_name: monorepopoetry
+    ports:
+      - "8001:8001"
+    networks:
+      - monoreponetwork
+
+  pdm_service:
+    build:
+      context: ./services/pdm_service
+    container_name: monorepopdm
+    ports:
+      - "8002:8002"
+    networks:
+      - monoreponetwork
+
+  piptools_service:
+    build:
+      context: ./services/piptools_service
+    container_name: monorepopiptools
+    ports:
+      - "8003:8003"
+    networks:
+      - monoreponetwork
+
+  fast_api:
+    build:
+      context: ./services/fast_api
+    container_name: monorepofastapi
+    volumes:
+      - ./services/fast_api:/app
+    ports:
+      - "8004:8004"
+    networks:
+      - monoreponetwork
+    depends_on:
+      - db
+      - redis
+      - minio
+      
+volumes:
+  monorepodata:
+  miniodata:
