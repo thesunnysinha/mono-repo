@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "sample-service-2"
+version = "0.1.0"
+description = ""
+authors = ["sunny kumar sinha <thesunnysinha@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+uvicorn = "^0.30.5"
+fastapi = "^0.112.0"
+gunicorn = "^23.0.0"
+editdistance = "^0.8.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

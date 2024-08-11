@@ -43,6 +43,19 @@ services:
     networks:
       - monoreponetwork
 
+  sample-service-2:
+    build:
+      context: ./services/sample-service-2
+    container_name: monosampleservice2
+    volumes:
+      - ./services/sample-service-2:/app
+    ports:
+      - "8002:8002"
+    networks:
+      - monoreponetwork
+    depends_on:
+      - db
+  
   poetry_service:
     build:
       context: ./services/poetry_service
@@ -51,39 +64,6 @@ services:
       - "8001:8001"
     networks:
       - monoreponetwork
-
-  pdm_service:
-    build:
-      context: ./services/pdm_service
-    container_name: monorepopdm
-    ports:
-      - "8002:8002"
-    networks:
-      - monoreponetwork
-
-  piptools_service:
-    build:
-      context: ./services/piptools_service
-    container_name: monorepopiptools
-    ports:
-      - "8003:8003"
-    networks:
-      - monoreponetwork
-
-  fast_api:
-    build:
-      context: ./services/fast_api
-    container_name: monorepofastapi
-    volumes:
-      - ./services/fast_api:/app
-    ports:
-      - "8004:8004"
-    networks:
-      - monoreponetwork
-    depends_on:
-      - db
-      - redis
-      - minio
       
 volumes:
   monorepodata:
